@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
+import { getUserGitHubToken } from "@/lib/clerk/github";
 import { PipelineError } from "@/lib/pipeline/github";
 import { AlreadyRunningError, claimAnalysis, continueRun, type ClaimedRun } from "@/lib/pipeline/run";
 import { submitRepository } from "@/lib/pipeline/submit";
@@ -25,7 +26,10 @@ export async function submitAnalysis(_previous: FormState, form: FormData): Prom
   try {
     const submission = await submitRepository(admin, orgId, url);
     analysisId = submission.analysisId;
-    if (submission.created) start(await claimAnalysis(admin, analysisId));
+    if (submission.created) {
+      const githubToken = await getUserGitHubToken();
+      start(await claimAnalysis(admin, analysisId), githubToken);
+    }
   } catch (error) {
     if (error instanceof PipelineError) return { error: error.message };
     throw error;
@@ -43,7 +47,8 @@ export async function rerunAnalysis(analysisId: string): Promise<FormState> {
   if (!data) return { error: "Analysis not found" };
 
   try {
-    start(await claimAnalysis(createAdminSupabase(), analysisId));
+    const githubToken = await getUserGitHubToken();
+    start(await claimAnalysis(createAdminSupabase(), analysisId), githubToken);
   } catch (error) {
     if (error instanceof AlreadyRunningError) return { error: "It's already running" };
     throw error;
@@ -53,10 +58,10 @@ export async function rerunAnalysis(analysisId: string): Promise<FormState> {
 
 // The run outlives the response. It records its own failure on the row; this
 // only makes sure nothing is lost if even that fails.
-function start(claimed: ClaimedRun): void {
+function start(claimed: ClaimedRun, githubToken?: string): void {
   after(async () => {
     try {
-      await continueRun(createAdminSupabase(), claimed);
+      await continueRun(createAdminSupabase(), claimed, { githubToken });
     } catch (error) {
       console.error(`Analysis ${claimed.analysisId} failed:`, error);
     }

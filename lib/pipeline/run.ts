@@ -33,18 +33,18 @@ export async function runAnalysis(db: Db, analysisId: string): Promise<void> {
 
 // Everything after the claim. Any failure, in any stage, ends with the row
 // marked failed with its reason, in the stage it happened in.
-export async function continueRun(db: Db, claimed: ClaimedRun): Promise<void> {
+export async function continueRun(db: Db, claimed: ClaimedRun, options?: { githubToken?: string }): Promise<void> {
   const { analysisId, organizationId, repository } = claimed;
   let workdir: string | null = null;
   try {
-    workdir = await mkdtemp(path.join(tmpdir(), "cartograph-"));
+    workdir = await mkdtemp(path.join(tmpdir(), "gitgraph-"));
     await enter(db, claimed, "fetch", `Resolving the latest commit of ${repository.owner}/${repository.name}`);
-    const sha = await resolveHeadCommit(repository);
+    const sha = await resolveHeadCommit(repository, options?.githubToken);
     await update(db, claimed, {
       commit_sha: sha,
       stage_message: `Downloading ${repository.owner}/${repository.name} at ${sha.slice(0, 7)}`,
     });
-    await downloadArchive(repository, sha, workdir);
+    await downloadArchive(repository, sha, workdir, options?.githubToken);
 
     await enter(db, claimed, "select", "Walking the repository for TypeScript and JavaScript files");
     const selection = selectFiles(workdir);
