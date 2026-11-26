@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/-LangSmith-1C1C1C?style=for-the-badge&logo=langchain&logoColor=white" />
   </div>
 
-  <h3 align="center">Cartograph | AI-Powered Codebase Dependency Mapper</h3>
+  <h3 align="center">GitGraph | AI-Powered Codebase Dependency Mapper</h3>
 </div>
 
 ## Table of Contents
@@ -21,13 +21,13 @@
 
 ## <a name="introduction">Introduction</a>
 
-Cartograph is a developer tool that turns any public TypeScript or JavaScript repository into an interactive dependency map. Modern engineering teams frequently ship AI-generated code without fully reading every underlying file, creating complex architectural webs with hidden imports and coupled modules. Cartograph solves this by parsing raw source code into navigable nodes and edges, allowing developers to immediately visualize dependency chains, evaluate blast radii before making edits, and ask AI models for context-aware explanations grounded entirely in true AST parsing.
+GitGraph is a developer tool that turns any TypeScript or JavaScript repository into an interactive dependency map. Modern engineering teams frequently ship AI-generated code without fully reading every underlying file, creating complex architectural webs with hidden imports and coupled modules. GitGraph solves this by parsing raw source code into navigable nodes and edges, allowing developers to immediately visualize dependency chains, evaluate blast radii before making edits, and ask AI models for context-aware explanations grounded entirely in true AST parsing.
 
-Built around a strict core principle, Cartograph guarantees that every node and edge on the canvas comes directly from real code analysis rather than AI predictions. By keeping graph arithmetic pure and standalone, the AI agent is only permitted to explain and summarize verified structure. Packed with multi-tenant organization support via Clerk, row-level security on Supabase, and full observability tracing through LangSmith, Cartograph provides production-grade infrastructure for software teams navigating large codebases.
+Built around a strict core principle, GitGraph guarantees that every node and edge on the canvas comes directly from real code analysis rather than AI predictions. By keeping graph arithmetic pure and standalone, the AI agent is only permitted to explain and summarize verified structure. Packed with multi-tenant organization support via Clerk, row-level security on Supabase, and full observability tracing through LangSmith, GitGraph provides production-grade infrastructure for software teams navigating large codebases.
 
 ## <a name="tech-stack">Tech Stack</a>
 
-- **[Next.js 16](https://nextjs.org/)** is a full-stack React framework that powers Cartograph using the App Router, Server Actions, and dynamic server-rendering capabilities for seamless frontend-backend integration.
+- **[Next.js 16](https://nextjs.org/)** is a full-stack React framework that powers GitGraph using the App Router, Server Actions, and dynamic server-rendering capabilities for seamless frontend-backend integration.
 - **[TypeScript 5](https://www.typescriptlang.org/)** is a strongly typed superset of JavaScript that ensures strict type safety across the entire application and parser pipeline.
 - **[ts-morph](https://ts-morph.com/)** is a wrapper around the TypeScript Compiler API that parses source code files, imports, re-exports, and dynamic references into deterministic AST graph structures.
 - **[React Flow (@xyflow/react)](https://reactflow.dev/)** is an interactive canvas library used alongside dagre for laying out, rendering, and navigating complex codebase dependency graphs.
@@ -35,7 +35,7 @@ Built around a strict core principle, Cartograph guarantees that every node and 
 - **[Supabase](https://supabase.com/)** supplies the Postgres database layer with strict Row-Level Security (RLS) policies enforced directly via JWT claims.
 - **[OpenAI SDK](https://platform.openai.com/)** drives the AI explanation and agentic inspection capabilities, providing answers grounded strictly in parsed code structures.
 - **[LangSmith](https://smith.langchain.com/)** is an observability platform that traces every LLM call, records dataset runs, and evaluates model responses against exact ground-truth code metrics.
-- **[Tailwind CSS v4](https://tailwindcss.com/)** is a utility-first CSS framework that powers Cartograph's dense, high-information developer interface.
+- **[Tailwind CSS v4](https://tailwindcss.com/)** is a utility-first CSS framework that powers GitGraph's dense, high-information developer interface.
 
 ## <a name="features">Features</a>
 
@@ -89,7 +89,7 @@ SUPABASE_SECRET_KEY=
 # LANGSMITH
 LANGSMITH_TRACING=true
 LANGSMITH_API_KEY=
-LANGSMITH_PROJECT=cartograph
+LANGSMITH_PROJECT=gitgraph
 LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 
 # GROQ
