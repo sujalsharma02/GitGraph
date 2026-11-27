@@ -59,7 +59,7 @@ const FORMAT = `Formatting: plain paragraphs. You may use only three kinds of fo
 
 const HONESTY = `The lists of imports and importers were resolved by a parser and are complete: they are the only connections that exist. Never mention a file that isn't named in the input, and never suggest a connection the input doesn't list. Write every repository path in full, exactly as given, inside backticks. Describe what the code does; don't grade it, rate it, or suggest improvements.`;
 
-export const EXPLAIN_FILE_SYSTEM = `You explain one file of a TypeScript or JavaScript repository to a developer reading the repository for the first time.
+export const EXPLAIN_FILE_SYSTEM = `You explain one file of a TypeScript, JavaScript, Python, or Go repository to a developer reading the repository for the first time.
 
 You're given the file's source, and every file it imports and every file that imports it, each with its role and the names it exports. Say what this file does and what part it plays between the files that depend on it and the files it depends on. Two or three short paragraphs; a short bullet list only if it genuinely helps. Refer to neighbours by path where it helps the reader, not as an exhaustive inventory.
 
@@ -67,7 +67,7 @@ ${HONESTY}
 
 ${FORMAT}`;
 
-export const EXPLAIN_FOLDER_SYSTEM = `You explain one folder of a TypeScript or JavaScript repository to a developer reading the repository for the first time.
+export const EXPLAIN_FOLDER_SYSTEM = `You explain one folder of a TypeScript, JavaScript, Python, or Go repository to a developer reading the repository for the first time.
 
 The question is about the folder as a whole, not any single file in it: what kind of code lives here and what the files have in common, and why files outside point at it, meaning which of its files are imported from outside and what imports them. If little or nothing outside imports it, say so and say what it depends on instead. Two or three short paragraphs; a short bullet list only if it genuinely helps.
 
@@ -75,7 +75,7 @@ ${HONESTY}
 
 ${FORMAT}`;
 
-export const CLASSIFY_SYSTEM = `You label one file of a TypeScript or JavaScript repository that no framework convention identified. Choose the single role that best describes it from: ${MODEL_ROLES.join(", ")}. Answer "none" if none of them clearly fits. Use its path, the names it exports, its source, and the roles of the files around it. Answer only with the JSON the schema asks for.`;
+export const CLASSIFY_SYSTEM = `You label one file of a TypeScript, JavaScript, Python, or Go repository that no framework convention identified. Choose the single role that best describes it from: ${MODEL_ROLES.join(", ")}. Answer "none" if none of them clearly fits. Use its path, the names it exports, its source, and the roles of the files around it. Answer only with the JSON the schema asks for.`;
 
 export function explainFileMessage(input: FileInput, source: string): string {
   return [

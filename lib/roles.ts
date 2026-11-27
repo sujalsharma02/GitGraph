@@ -63,6 +63,9 @@ const GENERIC: readonly Role[] = ["config", "test"];
 
 const REACT: readonly Role[] = ["component", "hook"];
 
+const PYTHON_WEB: readonly Role[] = ["api-endpoint", "router", "service", "model", "dto", "repository", "middleware", "util", ...GENERIC];
+const GO_WEB: readonly Role[] = ["api-endpoint", "router", "controller", "service", "model", "repository", "middleware", "util", ...GENERIC];
+
 export const FRAMEWORK_ROLES = {
   "Next.js": ["page-route", "api-endpoint", "server-action", "layout", "route-ui", ...REACT, "middleware", "metadata", "instrumentation", ...GENERIC],
   NestJS: [
@@ -84,6 +87,15 @@ export const FRAMEWORK_ROLES = {
   Express: ["router", "controller", "service", "model", "middleware", ...GENERIC],
   Docusaurus: ["page-route", ...REACT, "theme-override", ...GENERIC],
   React: [...REACT, ...GENERIC],
+  FastAPI: PYTHON_WEB,
+  Flask: PYTHON_WEB,
+  Django: PYTHON_WEB,
+  Python: ["service", "model", "dto", "repository", "util", ...GENERIC],
+  Gin: GO_WEB,
+  Echo: GO_WEB,
+  Fiber: GO_WEB,
+  Chi: GO_WEB,
+  Go: GO_WEB,
   none: GENERIC,
 } as const satisfies Record<string, readonly Role[]>;
 

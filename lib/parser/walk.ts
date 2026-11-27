@@ -3,9 +3,11 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fallbackAdapter } from "./adapters/fallback.ts";
 import { selectAdapter, type FrameworkAdapter } from "./adapters/index.ts";
+import { detectGoFramework, readGoMod } from "./languages/go.ts";
+import { detectPythonFramework } from "./languages/python.ts";
 import type { ExcludedDirectory, Project, SkippedFile } from "./types.ts";
 
-export const CODE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
+export const CODE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".py", ".go"];
 const DECLARATION = /\.d\.(ts|mts|cts)$|\.d\.[^/.]+\.ts$/;
 
 // Generated bundles and vendored blobs run past this; hand-written modules don't.
@@ -36,6 +38,8 @@ export type WalkResult = {
   projects: Project[];
   /** Each project's adapter, by project path. */
   adapters: Map<string, FrameworkAdapter>;
+  /** Go module path (`go.mod` `module ...`), by project path. */
+  goModules: Map<string, string>;
   /** The project of every file found, parsed or skipped. */
   projectOf: Map<string, string>;
 };
@@ -73,7 +77,9 @@ function countLines(content: string): number {
 }
 
 function genericExclusion(name: string): string | null {
-  if (name === "node_modules") return "dependency directory";
+  if (name === "node_modules" || name === "__pycache__" || name === "venv" || name === "vendor") {
+    return "dependency directory";
+  }
   if (name.startsWith(".")) return "dot-directory";
   return null;
 }
@@ -87,6 +93,7 @@ export function walkRepository(root: string): WalkResult {
     workspacePackages: new Set(),
     projects: [],
     adapters: new Map(),
+    goModules: new Map(),
     projectOf: new Map(),
   };
 
@@ -102,14 +109,40 @@ export function walkRepository(root: string): WalkResult {
     // parent's project and keeps its conventions.
     let project = parent;
     const manifest = entries.find((entry) => entry.isFile() && entry.name === "package.json");
-    if (!parent || manifest) {
+    const goModFile = entries.find((entry) => entry.isFile() && entry.name === "go.mod");
+    const pyManifest = entries.find(
+      (entry) =>
+        entry.isFile() &&
+        (entry.name === "pyproject.toml" || entry.name === "requirements.txt" || entry.name === "setup.py"),
+    );
+
+    if (!parent || manifest || goModFile || pyManifest) {
       const pkg = manifest ? readPackage(path.join(absoluteDir, manifest.name)) : null;
       if (pkg?.name) result.workspacePackages.add(pkg.name);
       const adapter = selectAdapter({ dir: absoluteDir, dependencies: pkg?.dependencies ?? new Set() });
-      if (!parent || adapter !== fallbackAdapter) {
-        project = { path: toPosix(path.relative(root, absoluteDir)) || ".", adapter };
+      const relProject = toPosix(path.relative(root, absoluteDir)) || ".";
+
+      if (adapter !== fallbackAdapter) {
+        project = { path: relProject, adapter };
         result.projects.push({ path: project.path, adapter: adapter.name });
         result.adapters.set(project.path, adapter);
+      } else if (goModFile) {
+        const goMod = readGoMod(absoluteDir);
+        const goAdapter = goMod ? detectGoFramework(goMod.dependencies) : "Go";
+        if (goMod) result.goModules.set(relProject, goMod.name);
+        project = { path: relProject, adapter: fallbackAdapter };
+        result.projects.push({ path: relProject, adapter: goAdapter });
+        result.adapters.set(relProject, fallbackAdapter);
+      } else if (pyManifest) {
+        const pyDeps = readPythonDeps(absoluteDir);
+        const pyAdapter = detectPythonFramework(pyDeps);
+        project = { path: relProject, adapter: fallbackAdapter };
+        result.projects.push({ path: relProject, adapter: pyAdapter });
+        result.adapters.set(relProject, fallbackAdapter);
+      } else if (!parent) {
+        project = { path: relProject, adapter: fallbackAdapter };
+        result.projects.push({ path: relProject, adapter: fallbackAdapter.name });
+        result.adapters.set(relProject, fallbackAdapter);
       }
     }
     if (!project) throw new Error(`No project for ${absoluteDir}`);
@@ -182,6 +215,21 @@ function readPackage(absolutePath: string): { name: string | null; dependencies:
   }
   const name = "name" in parsed && typeof parsed.name === "string" ? parsed.name : null;
   return { name, dependencies };
+}
+
+function readPythonDeps(dir: string): Set<string> {
+  const deps = new Set<string>();
+  for (const file of ["pyproject.toml", "requirements.txt", "requirements-dev.txt", "setup.py"]) {
+    try {
+      const content = readFileSync(path.join(dir, file), "utf8").toLowerCase();
+      for (const pkg of ["fastapi", "flask", "django", "pytest"]) {
+        if (new RegExp(`\\b${pkg}\\b`).test(content)) deps.add(pkg);
+      }
+    } catch {
+      // ignore missing manifest
+    }
+  }
+  return deps;
 }
 
 function readCandidate(
