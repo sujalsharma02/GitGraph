@@ -10,6 +10,9 @@
   </div>
 
   <h3 align="center">GitGraph | AI-Powered Codebase Dependency Mapper</h3>
+  <p align="center">
+    <a href="https://git-graph-opal.vercel.app" target="_blank"><b>Live App: git-graph-opal.vercel.app</b></a>
+  </p>
 </div>
 
 ## Table of Contents
