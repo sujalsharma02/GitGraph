@@ -2,6 +2,7 @@ import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ConnectGitHubButton } from "@/components/connect-github-button";
 import { ThemeControl } from "@/components/theme-control";
 import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 
@@ -26,6 +27,7 @@ export default async function WorkspaceLayout({ children }: LayoutProps<"/">) {
           afterLeaveOrganizationUrl="/start"
         />
         <div className="ml-auto flex items-center gap-3">
+          <ConnectGitHubButton variant="header" />
           <ThemeControl initial={theme} />
           <UserButton />
         </div>

@@ -78,7 +78,7 @@ export async function resolveHeadCommit({ owner, name }: Repository, token?: str
     throw new PipelineError(
       token
         ? `${owner}/${name} doesn't exist on GitHub, or you don't have access to it`
-        : `${owner}/${name} doesn't exist on GitHub, or it isn't public`,
+        : `${owner}/${name} doesn't exist on GitHub, or it isn't public (connect GitHub for private repos)`,
     );
   }
   if (response.status === 409 || response.status === 422) {

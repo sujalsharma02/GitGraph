@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { ConnectGitHubButton } from "@/components/connect-github-button";
 import { StateMark } from "@/components/state-mark";
 import { STAGES, STALE_AFTER_MS, type Progress } from "@/lib/pipeline/stages";
 import { RerunButton } from "./rerun-button";
@@ -92,6 +93,15 @@ export function AnalysisProgress({ analysisId, repository, commitSha, initial, s
             )}
             . The process running it has most likely stopped; re-run to start again.
           </p>
+        )}
+        {progress.status === "failed" && progress.message?.includes("isn't public") && (
+          <div className="mt-4 flex max-w-2xl flex-col gap-2 rounded border border-line bg-surface p-3 text-xs">
+            <p className="text-fg">
+              Trying to analyse a private repository? Connect your GitHub account with{" "}
+              <code className="font-mono">repo</code> access, then click <strong>Re-run</strong>.
+            </p>
+            <ConnectGitHubButton />
+          </div>
         )}
         {complete && progress.message && <p className="mt-3 text-xs text-fg">{progress.message} — opening the map…</p>}
         {lost && (

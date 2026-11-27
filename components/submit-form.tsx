@@ -15,7 +15,7 @@ export function SubmitForm() {
         autoComplete="off"
         spellCheck={false}
         placeholder="github.com/owner/repo"
-        aria-label="Public GitHub repository URL"
+        aria-label="GitHub repository URL"
         aria-invalid={state.error ? true : undefined}
         className="h-6 w-72 min-w-0 rounded border border-line bg-canvas px-2 font-mono text-xs outline-none placeholder:text-fg-muted focus:border-accent"
       />
