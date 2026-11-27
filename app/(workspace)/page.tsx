@@ -8,6 +8,21 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { ago } from "@/lib/time";
 
 const LIST_LIMIT = 100;
+const SUPPORTED_LANGUAGES = ["TypeScript", "JavaScript", "Python", "Go"] as const;
+const SUPPORTED_FRAMEWORKS = [
+  "Next.js",
+  "React",
+  "Express",
+  "NestJS",
+  "Docusaurus",
+  "FastAPI",
+  "Flask",
+  "Django",
+  "Gin",
+  "Echo",
+  "Fiber",
+  "Chi",
+] as const;
 type Tally = Status | "stale";
 const TALLY_ORDER: Tally[] = ["running", "queued", "stale", "complete", "failed"];
 
@@ -53,10 +68,25 @@ export default async function DashboardPage() {
         )}
       </div>
 
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line bg-surface/40 px-3 py-1.5 text-[11px] text-fg-muted">
+        <span className="font-medium text-fg">Supported:</span>
+        <div className="flex flex-wrap items-center gap-1">
+          {SUPPORTED_LANGUAGES.map((lang) => (
+            <span key={lang} className="rounded border border-line bg-canvas px-1.5 py-0.5 font-mono text-[10px] text-fg">
+              {lang}
+            </span>
+          ))}
+        </div>
+        <span className="text-line">|</span>
+        <span className="truncate font-mono text-[10px]">
+          {SUPPORTED_FRAMEWORKS.join(" · ")}
+        </span>
+      </div>
+
       {rows.length === 0 ? (
         <div className="px-3 py-10 text-xs text-fg-muted">
           <p className="text-fg">No analyses yet.</p>
-          <p className="mt-1">Paste a public GitHub repository above to map it.</p>
+          <p className="mt-1">Paste a GitHub repository above to map it.</p>
         </div>
       ) : (
         <div className="min-h-0 flex-1 overflow-auto">

@@ -15,9 +15,46 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "GitGraph",
-  description: "Dependency maps of public GitHub repositories",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "GitGraph — Codebase Dependency Mapper",
+    template: "%s | GitGraph",
+  },
+  description:
+    "Turn any TypeScript, JavaScript, Python, or Go GitHub repository into an interactive dependency map with AST parsing, blast radius analysis, and AI explanations.",
+  keywords: [
+    "GitGraph",
+    "codebase dependency map",
+    "AST parser",
+    "GitHub repository analyzer",
+    "blast radius",
+    "TypeScript",
+    "JavaScript",
+    "Python",
+    "Go",
+  ],
+  openGraph: {
+    title: "GitGraph — Codebase Dependency Mapper",
+    description:
+      "Turn any TypeScript, JavaScript, Python, or Go GitHub repository into an interactive dependency map with AST parsing, blast radius analysis, and AI explanations.",
+    type: "website",
+    siteName: "GitGraph",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GitGraph — Codebase Dependency Mapper",
+    description:
+      "Interactive dependency maps, blast radius analysis, and grounded AI explanations for TypeScript, JavaScript, Python, and Go repositories.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 // Clerk's components read the same tokens as the app, so they follow the
